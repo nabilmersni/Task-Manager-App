@@ -6,6 +6,7 @@ import { users } from "../db/schema";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { auth, AuthRequest } from "../middleware/auth";
+import { error } from "console";
 
 const authRouter = Router();
 
@@ -122,7 +123,12 @@ authRouter.post(
 );
 
 authRouter.get("/", auth, async (req: AuthRequest, res) => {
-  res.send(req.token);
+  if (!req.user) {
+    res.status(404).json({
+      error: "User not found!",
+    });
+  }
+  res.status(200).json(req.user);
 });
 
 export default authRouter;

@@ -2,12 +2,13 @@ import { UUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { db } from "../db";
-import { users } from "../db/schema";
+import { User, users } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export interface AuthRequest extends Request {
-  user?: UUID;
+  userId?: UUID;
   token?: string;
+  user?: User;
 }
 
 export const auth = async (
@@ -39,8 +40,9 @@ export const auth = async (
       return;
     }
 
-    req.user = verifiedToken.id;
+    req.userId = verifiedToken.id;
     req.token = token;
+    req.user = user;
 
     next();
   } catch (error) {
