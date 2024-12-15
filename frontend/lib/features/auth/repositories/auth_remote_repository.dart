@@ -71,18 +71,21 @@ class AuthRemoteRepository {
     try {
       final token = await spService.getToken();
       if (token == null) {
-        return null;
+        throw "Token is required";
       }
+
       final res = await http.post(
         Uri.parse('${Constants.backendUri}/auth/tokenIsValid'),
         headers: {
           'Content-Type': 'application/json',
           'x-auth-token': token,
         },
-      );
+      ).timeout(const Duration(seconds: 5), onTimeout: () {
+        throw "Request timed out";
+      });
 
       if (res.statusCode != 200 || jsonDecode(res.body) == false) {
-        return null;
+        throw "Token is required";
       }
 
       final response = await http.get(
@@ -94,7 +97,7 @@ class AuthRemoteRepository {
       );
 
       if (response.statusCode != 200) {
-        return null;
+        throw "An error occured";
       }
 
       return UserModel.fromJson(response.body);

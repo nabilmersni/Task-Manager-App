@@ -45,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
               (route) => false,
             );
           } else if (state is AuthError) {
-            print(state.error);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error),

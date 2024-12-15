@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_app/core/theme/theme.dart';
 import 'package:task_app/features/auth/cubits/auth_cubit.dart';
 import 'package:task_app/features/auth/pages/login_page.dart';
+import 'package:task_app/features/home/cubits/tasks_cubit.dart';
 import 'package:task_app/features/home/pages/home_page.dart';
 
 void main() {
@@ -10,6 +11,9 @@ void main() {
     providers: [
       BlocProvider(
         create: (context) => AuthCubit(),
+      ),
+      BlocProvider(
+        create: (context) => TasksCubit(),
       ),
     ],
     child: const MyApp(),
