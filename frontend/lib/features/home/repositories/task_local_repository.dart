@@ -40,10 +40,8 @@ class TaskLocalRepository {
 
   Future<void> insertTask(TaskModel taskModel) async {
     final db = await database;
-    db.insert(
-      tableName,
-      taskModel.toMap(),
-    );
+    await db.delete(tableName, where: 'id = ?', whereArgs: [taskModel.id]);
+    await db.insert(tableName, taskModel.toMap());
   }
 
   Future<void> insertTasks(List<TaskModel> tasks) async {
@@ -72,5 +70,33 @@ class TaskLocalRepository {
       return tasks;
     }
     return [];
+  }
+
+  Future<List<TaskModel>> getUnsyncedTasks() async {
+    final db = await database;
+    final tasksMap = await db.query(
+      tableName,
+      where: "isSynced = ?",
+      whereArgs: [0],
+    );
+
+    if (tasksMap.isNotEmpty) {
+      List<TaskModel> tasks = [];
+      for (var task in tasksMap) {
+        tasks.add(TaskModel.fromMap(task));
+      }
+      return tasks;
+    }
+    return [];
+  }
+
+  Future<void> updateRow(String id, int newValue) async {
+    final db = await database;
+    await db.update(
+      tableName,
+      {'isSynced': newValue},
+      where: "id = ?",
+      whereArgs: [id],
+    );
   }
 }

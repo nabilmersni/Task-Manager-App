@@ -72,4 +72,33 @@ class TaskRemoteRepository {
       rethrow;
     }
   }
+
+  Future<bool> syncTasks({
+    required String token,
+    required List<TaskModel> tasks,
+  }) async {
+    try {
+      final tasksMap = [];
+      for (var task in tasks) {
+        tasksMap.add(task.toMap());
+      }
+
+      final res = await http.post(
+        Uri.parse("${Constants.backendUri}/tasks/sync"),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+        body: jsonEncode(tasksMap),
+      );
+
+      if (res.statusCode != 201) {
+        throw jsonDecode(res.body)["msg"];
+      }
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
